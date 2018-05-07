@@ -145,6 +145,9 @@ public class Table {
                             //final Move move = null;
                             //DO MOVE
                             //ADD MOVE TO MOVE LOG
+                            humanMovedPiece.moveTo(destinationTile);
+                            /*
+                             */
 
                             sourceTile = null; //clear
                             destinationTile = null;
