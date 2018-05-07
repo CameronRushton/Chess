@@ -1,6 +1,7 @@
 import ai.AI;
 import board.ChessLocation;
 import game.ChessGame;
+import game.ChessPlayer;
 import gui.Table;
 import pieces.ChessPiece;
 
@@ -44,7 +45,7 @@ public class PlayGame {
             int oldRow = -1, oldCol = -1;
             int loc, loc2;
             int turnNum = 1;
-            boolean isFound = false, switchPlayers, restart = false;
+            boolean isFound = false, restart = false;
             String inputString, currentPlayer = player2;
             AI bot = new AI(game);
             ChessGame.getBoard().printBoard();
@@ -56,14 +57,10 @@ public class PlayGame {
                 callOut(currentPlayer);
                 if (currentPlayer.equals(player2) && EnableAI) {
                     bot.makeMove();
-                    turnNum += 1;
-                    if (turnNum % 2 == 1) { //P2 plays on turns 1, 3, 5, etc...
-                        currentPlayer = player2;
-                    } else {
-                        currentPlayer = player1;
-                    }
+                    currentPlayer = switchPlayers(turnNum);
 
                 }
+
                 do {
 
                     System.out.print("Enter piece coordinates, \"restart\", or \"quit\": "); // Example input: "quit","(2,3)","2,3"
@@ -111,43 +108,42 @@ public class PlayGame {
                     loc = checkForInt(inputString, 0);
                     loc2 = checkForInt(inputString, loc + 1);
                 }
+
                 if (inputString.equalsIgnoreCase("quit")) {
 
                     System.out.println("Thanks for playing!");
                     System.exit(0);
-                }else if (restart) {
-                    System.out.print("Are you sure you want to restart? (yes/no): ");
-                    inputString = input.next();
-                    if (inputString.equalsIgnoreCase("yes")) {
-                        System.out.println("Restarting...");
-                    } else {
-                        System.out.println("Restart canceled");
-                        restart = false;
-                    }
-                }
-                else if (loc == -2 || loc2 == -2) {
 
-                    System.out.println("Oops, there's been an input error");
+                } else if (restart) {
+
+                   //continue
+
+                } else if (loc == -2 || loc2 == -2) {
+
+                    System.out.println("There has been an input error");
 
                 } else { //If everything checks out
 
                     ChessLocation newLocation = new ChessLocation(intRow,intCol);
                     ChessLocation oldLocation = new ChessLocation(oldRow, oldCol);
-
-                    ChessPiece piece = game.getBoard().getPieceAt(oldLocation);
-                    switchPlayers = piece.moveTo(newLocation); //Try to move piece
+                    //Try to move piece
                     //if the piece moved, switch players
-                    if (switchPlayers) {
-                        turnNum += 1;
-                        if (turnNum % 2 == 1) { //P2 plays on turns 1, 3, 5, etc...
-                            currentPlayer = player2;
-                        } else {
-                            currentPlayer = player1;
-                        }
+                    if (game.getBoard().getPieceAt(oldLocation).moveTo(newLocation)) {
+                        currentPlayer = switchPlayers(turnNum);
                     }
                 }
+
                 isFound = false; //reset
             } while(!restart); //Loop through select/move indefinitely until user quits
+        }
+    }
+
+    private static String switchPlayers(int turnNum) { //TODO: Return ChessPlayer
+        turnNum += 1;
+        if (turnNum % 2 == 1) { //P2 plays on turns 1, 3, 5, etc...
+            return player2;
+        } else {
+            return player1;
         }
     }
 
